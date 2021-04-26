@@ -31,15 +31,27 @@ const SUSPENSE_CONFIG = {
 
 const pokemonCacheResource = {}
 
-function getPokemonResource(name) {
-  let resource = pokemonCacheResource[name]
+const PokemonCacheContext = React.createContext()
 
-  if (!resource) {
-    resource = createPokemonResource(name)
-    pokemonCacheResource[name] = resource
-  }
+function PokemonCacheProvider({children}) {
+  const cacheRef = React.useRef(pokemonCacheResource)
 
-  return resource
+  const getPokemonResource = React.useCallback(name => {
+    let resource = cacheRef.current[name]
+
+    if (!resource) {
+      resource = createPokemonResource(name)
+      cacheRef.current[name] = resource
+    }
+
+    return resource
+  }, [])
+
+  return (
+    <PokemonCacheContext.Provider value={{getPokemonResource}}>
+      {children}
+    </PokemonCacheContext.Provider>
+  )
 }
 
 function createPokemonResource(pokemonName) {
@@ -50,6 +62,7 @@ function App() {
   const [pokemonName, setPokemonName] = React.useState('')
   const [startTransition, isPending] = React.useTransition(SUSPENSE_CONFIG)
   const [pokemonResource, setPokemonResource] = React.useState(null)
+  const {getPokemonResource} = React.useContext(PokemonCacheContext)
 
   React.useEffect(() => {
     if (!pokemonName) {
@@ -59,7 +72,7 @@ function App() {
     startTransition(() => {
       setPokemonResource(getPokemonResource(pokemonName))
     })
-  }, [pokemonName, startTransition])
+  }, [pokemonName, startTransition, getPokemonResource])
 
   function handleSubmit(newPokemonName) {
     setPokemonName(newPokemonName)
@@ -93,4 +106,12 @@ function App() {
   )
 }
 
-export default App
+function AppWithProvider() {
+  return (
+    <PokemonCacheProvider>
+      <App />
+    </PokemonCacheProvider>
+  )
+}
+
+export default AppWithProvider
