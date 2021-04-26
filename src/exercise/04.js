@@ -33,7 +33,7 @@ const pokemonCacheResource = {}
 
 const PokemonCacheContext = React.createContext()
 
-function PokemonCacheProvider({children}) {
+function PokemonCacheProvider({children, cacheTime = 5000}) {
   const cacheRef = React.useRef(pokemonCacheResource)
 
   const getPokemonResource = React.useCallback(name => {
