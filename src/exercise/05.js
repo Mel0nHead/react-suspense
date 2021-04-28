@@ -11,17 +11,23 @@ import {
 } from '../pokemon'
 import {createResource} from '../utils'
 
-// ❗❗❗❗
-// 🦉 On this one, make sure that you UNCHECK the "Disable cache" checkbox
-// in your DevTools "Network Tab". We're relying on that cache for this
-// approach to work!
-// ❗❗❗❗
-
 // we need to make a place to store the resources outside of render so
 // 🐨 create "cache" object here.
+const imgSrcResourceCache = {}
 
-// 🐨 create an Img component that renders a regular <img /> and accepts a src
-// prop and forwards on any remaining props.
+function getImgSrcResource(src) {
+  let resource = imgSrcResourceCache[src]
+
+  if (!resource) {
+  }
+}
+
+function Img({src, alt, ...otherProps}) {
+  if (!imgSrcResourceCache[src]) {
+  }
+
+  return <img src={src} alt={alt} {...otherProps} />
+}
 // 🐨 The first thing you do in this component is check whether your
 // imgSrcResourceCache already has a resource for the given src prop. If it does
 // not, then you need to create one (💰 using createResource).
